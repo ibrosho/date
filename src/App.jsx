@@ -2,16 +2,17 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 
 const FOOD_OPTIONS = [
-  { name: 'Burger 🍔', icon: '🍔' },
-  { name: 'Ice Cream 🍦', icon: '🍦' },
-  { name: 'Chicken & Chips 🍗', icon: '🍗' },
-  { name: 'Jollof Rice 🍛', icon: '🍛' },
-  { name: 'Fried Rice 🍚', icon: '🍚' },
-  { name: 'Pasta & Wine 🍝', icon: '🍝' }
+  { name: 'Burger & Fries', image: '/images/burger.png' },
+  { name: 'Ice Cream Sundae', image: '/images/ice_cream.png' },
+  { name: 'Crispy Chicken & Chips', image: '/images/chicken_chips.png' },
+  { name: 'Jollof Rice & Plantain', image: '/images/jollof_rice.png' },
+  { name: 'Special Fried Rice', image: '/images/fried_rice.png' },
+  { name: 'Pasta & Wine', image: '/images/pasta_wine.png' }
 ];
 
 const TIME_PILLS = ['6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM'];
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const FLOWER_EMOJIS = ['🌸', '🌹', '🌷', '🌺', '✨', '💖'];
 
 export default function App() {
   const [screen, setScreen] = useState('lovebox'); // 'lovebox', 'welcome', 'date', 'time', 'food', 'summary'
@@ -19,8 +20,7 @@ export default function App() {
   const [selectedDay, setSelectedDay] = useState(11);
   const [month, setMonth] = useState('July');
   const [selectedTime, setSelectedTime] = useState('8:00 PM');
-  const [customTime, setCustomTime] = useState('20:00');
-  const [selectedFood, setSelectedFood] = useState('Jollof Rice 🍛');
+  const [selectedFood, setSelectedFood] = useState('Jollof Rice & Plantain');
 
   // NO Button Running Away State
   const [noPos, setNoPos] = useState({ x: 0, y: 0 });
@@ -28,15 +28,38 @@ export default function App() {
   const [fixedPos, setFixedPos] = useState({ left: 0, top: 0 });
   const noButtonRef = useRef(null);
 
-  // Generate calendar days for July 2026 (Starts on Wednesday -> offset 3)
+  // Generate calendar days for July 2026
   const calendarDays = useMemo(() => {
-    const startDay = new Date(2026, 6, 1).getDay(); // July 2026
+    const startDay = new Date(2026, 6, 1).getDay();
     return Array.from({ length: 31 + startDay }, (_, i) => (i < startDay ? null : i - startDay + 1));
   }, []);
 
+  // Flower petals generator for final screen
+  const flowerPetals = useMemo(() => {
+    return Array.from({ length: 28 }, (_, i) => ({
+      id: i,
+      emoji: FLOWER_EMOJIS[i % FLOWER_EMOJIS.length],
+      left: `${(i * 3.7) % 100}%`,
+      duration: `${3.5 + (i % 5) * 0.8}s`,
+      delay: `${(i % 7) * 0.4}s`
+    }));
+  }, []);
+
+  // Trigger confetti and continuous flower shower on summary screen
+  useEffect(() => {
+    if (screen === 'summary') {
+      try {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.5 }
+        });
+      } catch (e) {}
+    }
+  }, [screen]);
+
   // Jump NO button to a new position away from touch/pointer coordinate
   const triggerNoJump = (clientX, clientY) => {
-    // Provide haptic feedback if supported
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       try { navigator.vibrate(50); } catch (e) {}
     }
@@ -53,7 +76,6 @@ export default function App() {
     let newLeft, newTop;
     let attempts = 0;
 
-    // Pick a random location that is at least 140px away from user finger/cursor
     do {
       newLeft = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
       newTop = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
@@ -86,7 +108,7 @@ export default function App() {
       const btnCenterY = rect.top + rect.height / 2;
 
       const dist = Math.hypot(btnCenterX - clientX, btnCenterY - clientY);
-      const threshold = isTouchEvent ? 110 : 85; // Proximity trigger radius
+      const threshold = isTouchEvent ? 110 : 85;
 
       if (dist < threshold) {
         triggerNoJump(clientX, clientY);
@@ -105,7 +127,7 @@ export default function App() {
           const rect = btn.getBoundingClientRect();
           const dist = Math.hypot(rect.left + rect.width / 2 - touch.clientX, rect.top + rect.height / 2 - touch.clientY);
           if (dist < 120) {
-            if (e.cancelable) e.preventDefault(); // Prevent page scroll when chasing
+            if (e.cancelable) e.preventDefault();
           }
         }
         checkProximity(touch.clientX, touch.clientY, true);
@@ -139,7 +161,6 @@ export default function App() {
   }, [screen, isEscaped]);
 
   const handleYes = () => {
-    // Confetti effect
     try {
       confetti({
         particleCount: 100,
@@ -155,8 +176,7 @@ export default function App() {
     setSelectedDay(11);
     setMonth('July');
     setSelectedTime('8:00 PM');
-    setCustomTime('20:00');
-    setSelectedFood('Jollof Rice 🍛');
+    setSelectedFood('Jollof Rice & Plantain');
     setNoPos({ x: 0, y: 0 });
     setIsEscaped(false);
     setScreen('lovebox');
@@ -168,7 +188,26 @@ export default function App() {
 
   return (
     <main className="proposal-app">
-      {/* Ambient Petals */}
+      {/* FLOWER SHOWER ON SUMMARY SCREEN */}
+      {screen === 'summary' && (
+        <div className="flower-shower-container" aria-hidden="true">
+          {flowerPetals.map((p) => (
+            <span
+              key={p.id}
+              className="falling-flower"
+              style={{
+                left: p.left,
+                animationDuration: p.duration,
+                animationDelay: p.delay
+              }}
+            >
+              {p.emoji}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Ambient Background Petals */}
       <span className="proposal-petal proposal-petal--one" aria-hidden="true">❧</span>
       <span className="proposal-petal proposal-petal--two" aria-hidden="true">✧</span>
       <span className="proposal-petal proposal-petal--three" aria-hidden="true">❀</span>
@@ -189,29 +228,37 @@ export default function App() {
         </header>
 
         <section className="proposal-card" aria-live="polite">
-          {/* SCREEN 1: Love Box */}
+          {/* SCREEN 1: REAL ENVELOPE LOVE BOX */}
           {screen === 'lovebox' && (
             <div className="proposal-screen proposal-screen--lovebox">
-              <div className="love-box">
-                <p className="proposal-eyebrow">
-                  {isBoxOpen ? 'a little note for you' : 'something sweet is waiting'}
-                </p>
-                {isBoxOpen ? (
-                  <>
-                    <h1 className="love-box-title">
-                      You make ordinary days feel like something worth celebrating.
-                    </h1>
-                    <p className="love-box-message">
-                      So I made you a tiny corner of the internet, with one very important question inside.
-                    </p>
-                    <span className="love-box-signoff">with all my heart, xx</span>
-                  </>
-                ) : (
-                  <h1 className="love-box-title">
-                    Open this little box<br />
-                    <em>when you are ready.</em>
-                  </h1>
-                )}
+              <p className="proposal-eyebrow">
+                {isBoxOpen ? 'a little note for you' : 'something sweet is waiting'}
+              </p>
+
+              {/* 3D Envelope */}
+              <div
+                className={`envelope-wrapper`}
+                onClick={() => setIsBoxOpen(!isBoxOpen)}
+              >
+                <div className={`envelope ${isBoxOpen ? 'is-open' : ''}`}>
+                  <div className="envelope-back" />
+                  <div className="envelope-flap" />
+                  <div className="envelope-pocket" />
+                  <div className="envelope-wax-seal">♡</div>
+
+                  {/* Letter sliding out */}
+                  <div className="envelope-letter">
+                    <div className="letter-content">
+                      <h2 className="letter-title">
+                        You make ordinary days feel like something worth celebrating.
+                      </h2>
+                      <p className="letter-message">
+                        So I made you a tiny corner of the internet, with one very important question inside.
+                      </p>
+                      <span className="letter-signoff">with all my heart, xx</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <button
@@ -392,7 +439,7 @@ export default function App() {
             </div>
           )}
 
-          {/* SCREEN 5: Food Selection */}
+          {/* SCREEN 5: REAL FOOD PHOTO SELECTION */}
           {screen === 'food' && (
             <div className="proposal-screen">
               <p className="proposal-eyebrow">what are we eating?</p>
@@ -414,7 +461,9 @@ export default function App() {
                     {selectedFood === item.name && (
                       <span className="food-badge">selected ♡</span>
                     )}
-                    <span className="food-card-icon">{item.icon}</span>
+                    <div className="food-card-img-wrap">
+                      <img className="food-card-img" src={item.image} alt={item.name} />
+                    </div>
                     <span className="food-card-title">{item.name}</span>
                   </button>
                 ))}
@@ -430,10 +479,10 @@ export default function App() {
             </div>
           )}
 
-          {/* SCREEN 6: Final Summary */}
+          {/* SCREEN 6: Final Summary & Flower Shower */}
           {screen === 'summary' && (
             <div className="proposal-screen">
-              <p className="proposal-eyebrow">✦ ❀ ✦</p>
+              <p className="proposal-eyebrow">🌸 🌹 🌺</p>
               <h1 className="proposal-title">
                 It's officially a <em>Date!</em>
               </h1>
