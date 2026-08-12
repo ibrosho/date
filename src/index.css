@@ -1,0 +1,509 @@
+:root {
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  
+  --color-bg-start: #fff5f7;
+  --color-bg-end: #fbe4eb;
+  --color-card-bg: #ffffff;
+  --color-primary: #e91e63;
+  --color-primary-dark: #c2185b;
+  --color-text-main: #2c2c2e;
+  --color-text-muted: #6e6e73;
+  --color-border: #f0d0db;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+  color: var(--color-text-main);
+  touch-action: manipulation;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Background floating petals / sparkles */
+.proposal-app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.proposal-petal {
+  position: absolute;
+  font-size: 1.8rem;
+  color: rgba(233, 30, 99, 0.18);
+  user-select: none;
+  pointer-events: none;
+  animation: floatAround 12s ease-in-out infinite alternate;
+}
+
+.proposal-petal--one { top: 10%; left: 8%; animation-delay: 0s; }
+.proposal-petal--two { top: 20%; right: 12%; animation-delay: 3s; }
+.proposal-petal--three { bottom: 15%; left: 10%; animation-delay: 6s; }
+.proposal-petal--four { bottom: 12%; right: 10%; animation-delay: 9s; }
+
+@keyframes floatAround {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(10deg); }
+  100% { transform: translateY(10px) rotate(-10deg); }
+}
+
+/* Shell & Card */
+.proposal-shell {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.proposal-topline {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding: 0 0.5rem;
+}
+
+.proposal-mark {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.proposal-progress {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.proposal-progress span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(233, 30, 99, 0.2);
+  transition: background 0.3s;
+}
+
+.proposal-progress span.is-active {
+  background: var(--color-primary);
+  transform: scale(1.2);
+}
+
+.proposal-card {
+  width: 100%;
+  background: var(--color-card-bg);
+  border-radius: 32px;
+  padding: 2.75rem 2rem;
+  box-shadow: 
+    0 24px 70px rgba(220, 100, 140, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Typography & Headings */
+.proposal-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.proposal-title {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+}
+
+.proposal-title em {
+  font-style: italic;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.proposal-subtitle {
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  margin-bottom: 2rem;
+}
+
+.proposal-note {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #999;
+  margin-top: 1.75rem;
+}
+
+/* Action Buttons */
+.proposal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 56px;
+  width: 100%;
+}
+
+.proposal-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.9rem 2.2rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(233, 30, 99, 0.38);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  z-index: 2;
+}
+
+.proposal-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(233, 30, 99, 0.45);
+}
+
+.proposal-primary:active {
+  transform: scale(0.98);
+}
+
+/* Running NO Button */
+.proposal-secondary.proposal-no {
+  background: #ffffff;
+  color: #666666;
+  border: 1.5px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 0.85rem 1.8rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.25s ease, left 0.25s ease;
+  z-index: 1000;
+}
+
+/* Mobile specific styling for NO button */
+@media (max-width: 768px) {
+  .proposal-secondary.proposal-no {
+    min-width: 90px;
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+  }
+}
+
+.proposal-secondary.proposal-no:hover {
+  background: #fff5f7;
+  color: var(--color-primary-dark);
+}
+
+/* Love Box Component */
+.love-box {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.love-box-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  line-height: 1.3;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+}
+
+.love-box-message {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.love-box-signoff {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  display: block;
+}
+
+/* Calendar Component */
+.calendar {
+  background: #fffdfd;
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.calendar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-day.is-selected {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+}
+
+.calendar-day:hover:not(.is-empty):not(.is-selected) {
+  background: #ffe4ec;
+  color: var(--color-primary-dark);
+}
+
+.calendar-day.is-empty {
+  cursor: default;
+}
+
+/* Inputs & Selection Pills */
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  display: block;
+  text-align: left;
+  margin-bottom: 0.5rem;
+}
+
+.custom-input-wrap {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.proposal-input {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  outline: none;
+  background: #fffdfd;
+  transition: border-color 0.2s;
+}
+
+.proposal-input:focus {
+  border-color: var(--color-primary);
+}
+
+.input-suffix {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input-hint {
+  font-size: 0.78rem;
+  color: #999;
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+/* Time Pills Grid */
+.time-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1.25rem 0;
+}
+
+.time-pill {
+  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  color: var(--color-text-main);
+  padding: 0.6rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-pill.is-selected {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+}
+
+.time-pill:hover:not(.is-selected) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Food Cards Grid */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+}
+
+.food-card {
+  border: 2px solid var(--color-border);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.food-card.is-selected {
+  border-color: var(--color-primary);
+  background: #fff5f8;
+  box-shadow: 0 8px 20px rgba(233, 30, 99, 0.15);
+  transform: translateY(-2px);
+}
+
+.food-card-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.food-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.food-badge {
+  position: absolute;
+  top: -8px;
+  right: 10px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+/* Summary Card */
+.summary-box {
+  background: #fff9fb;
+  border: 1.5px solid var(--color-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+/* Replay Button */
+.proposal-step-note {
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
