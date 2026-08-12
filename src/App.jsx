@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 
+// 💡 TIP: Add your WhatsApp phone number here with country code (e.g. "2348012345678" or "14155552671")
+// If left blank, it will allow the user to pick any contact on WhatsApp!
+const YOUR_PHONE_NUMBER = ""; 
+
 const FOOD_OPTIONS = [
   { name: 'Burger & Fries', image: '/images/burger.png' },
   { name: 'Ice Cream Sundae', image: '/images/ice_cream.png' },
@@ -21,6 +25,7 @@ export default function App() {
   const [month, setMonth] = useState('July');
   const [selectedTime, setSelectedTime] = useState('8:00 PM');
   const [selectedFood, setSelectedFood] = useState('Jollof Rice & Plantain');
+  const [copied, setCopied] = useState(false);
 
   // NO Button Running Away State
   const [noPos, setNoPos] = useState({ x: 0, y: 0 });
@@ -28,13 +33,11 @@ export default function App() {
   const [fixedPos, setFixedPos] = useState({ left: 0, top: 0 });
   const noButtonRef = useRef(null);
 
-  // Generate calendar days for July 2026
   const calendarDays = useMemo(() => {
     const startDay = new Date(2026, 6, 1).getDay();
     return Array.from({ length: 31 + startDay }, (_, i) => (i < startDay ? null : i - startDay + 1));
   }, []);
 
-  // Flower petals generator for final screen
   const flowerPetals = useMemo(() => {
     return Array.from({ length: 28 }, (_, i) => ({
       id: i,
@@ -45,7 +48,6 @@ export default function App() {
     }));
   }, []);
 
-  // Trigger confetti and continuous flower shower on summary screen
   useEffect(() => {
     if (screen === 'summary') {
       try {
@@ -58,7 +60,6 @@ export default function App() {
     }
   }, [screen]);
 
-  // Jump NO button to a new position away from touch/pointer coordinate
   const triggerNoJump = (clientX, clientY) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       try { navigator.vibrate(50); } catch (e) {}
@@ -95,7 +96,6 @@ export default function App() {
     setNoPos({ x: 0, y: 0 });
   };
 
-  // Touch & Pointer proximity detector on window when on 'welcome' screen
   useEffect(() => {
     if (screen !== 'welcome') return;
 
@@ -183,12 +183,31 @@ export default function App() {
   };
 
   const formattedDate = `${month.trim() || 'July'} ${selectedDay}`;
+
+  // Formatted response message text
+  const responseMessage = `YES! I'd love to go on a date with you! 💖✨\n\n📅 Date: ${formattedDate}, 2026\n⏰ Time: ${selectedTime}\n🍽️ Food: ${selectedFood}\n\nCan't wait! 🥰`;
+
+  const handleSendWhatsApp = () => {
+    const encodedText = encodeURIComponent(responseMessage);
+    let waUrl = `https://wa.me/?text=${encodedText}`;
+    if (YOUR_PHONE_NUMBER && YOUR_PHONE_NUMBER.trim() !== '') {
+      const cleanNum = YOUR_PHONE_NUMBER.replace(/[^0-9]/g, '');
+      waUrl = `https://wa.me/${cleanNum}?text=${encodedText}`;
+    }
+    window.open(waUrl, '_blank');
+  };
+
+  const handleCopySummary = () => {
+    navigator.clipboard.writeText(responseMessage);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
   const steps = ['welcome', 'date', 'time', 'food', 'summary'];
   const currentStepIndex = steps.indexOf(screen);
 
   return (
     <main className="proposal-app">
-      {/* FLOWER SHOWER ON SUMMARY SCREEN */}
       {screen === 'summary' && (
         <div className="flower-shower-container" aria-hidden="true">
           {flowerPetals.map((p) => (
@@ -207,7 +226,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Ambient Background Petals */}
       <span className="proposal-petal proposal-petal--one" aria-hidden="true">❧</span>
       <span className="proposal-petal proposal-petal--two" aria-hidden="true">✧</span>
       <span className="proposal-petal proposal-petal--three" aria-hidden="true">❀</span>
@@ -235,7 +253,6 @@ export default function App() {
                 {isBoxOpen ? 'a little note for you' : 'something sweet is waiting'}
               </p>
 
-              {/* 3D Envelope */}
               <div
                 className={`envelope-wrapper`}
                 onClick={() => setIsBoxOpen(!isBoxOpen)}
@@ -246,7 +263,6 @@ export default function App() {
                   <div className="envelope-pocket" />
                   <div className="envelope-wax-seal">♡</div>
 
-                  {/* Letter sliding out */}
                   <div className="envelope-letter">
                     <div className="letter-content">
                       <h2 className="letter-title">
@@ -479,7 +495,7 @@ export default function App() {
             </div>
           )}
 
-          {/* SCREEN 6: Final Summary & Flower Shower */}
+          {/* SCREEN 6: Final Summary with WhatsApp & Copy buttons */}
           {screen === 'summary' && (
             <div className="proposal-screen">
               <p className="proposal-eyebrow">🌸 🌹 🌺</p>
@@ -505,10 +521,35 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Action Buttons to Send / Receive Answer */}
+              <div className="response-actions-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', marginBottom: '1.25rem' }}>
+                <button
+                  className="proposal-primary"
+                  type="button"
+                  onClick={handleSendWhatsApp}
+                  style={{
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    boxShadow: '0 8px 20px rgba(37, 211, 102, 0.35)'
+                  }}
+                >
+                  Send Response on WhatsApp 💬
+                </button>
+
+                <button
+                  className="time-pill"
+                  type="button"
+                  onClick={handleCopySummary}
+                  style={{ width: '100%', padding: '0.8rem', fontSize: '0.95rem' }}
+                >
+                  {copied ? 'Copied to Clipboard! ✨' : 'Copy Response Summary 📋'}
+                </button>
+              </div>
+
               <button
-                className="proposal-primary"
+                className="time-pill"
                 type="button"
                 onClick={handleReset}
+                style={{ border: 'none', background: 'transparent', color: '#999', fontSize: '0.85rem' }}
               >
                 Replay our little plan ♡
               </button>
