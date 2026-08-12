@@ -274,7 +274,7 @@ export default function App() {
           {screen === 'lovebox' && (
             <div className="proposal-screen proposal-screen--lovebox">
               <p className="proposal-eyebrow">
-                {isBoxOpen ? 'a little note for you' : 'something sweet is waiting'}
+                {isBoxOpen ? 'a little note for you' : 'something sweet is waiting for you BabyKay'}
               </p>
 
               <div
@@ -295,7 +295,7 @@ export default function App() {
                       <p className="letter-message">
                         So I made you a tiny corner of the internet, with one very important question inside.
                       </p>
-                      <span className="letter-signoff">with all my heart, xx</span>
+                      <span className="letter-signoff">with all my heart, Mr Anonymoux</span>
                     </div>
                   </div>
                 </div>
@@ -527,7 +527,7 @@ export default function App() {
                 It's officially a <em>Date!</em>
               </h1>
               <p className="proposal-subtitle">
-                YAY!! I am already looking forward to seeing you.
+                YAY!! I am already looking forward to seeing you, cuteie.
               </p>
 
               <div className="summary-box">
