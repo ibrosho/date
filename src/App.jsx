@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 
-// 💡 TIP: Add your WhatsApp phone number here with country code (e.g. "2348012345678" or "14155552671")
-// If left blank, it will allow the user to pick any contact on WhatsApp!
-const YOUR_PHONE_NUMBER = ""; 
+// Configured contact details
+const YOUR_PHONE_NUMBER = "2348104271840";
+const YOUR_EMAIL = "ibrosho@gmail.com";
 
 const FOOD_OPTIONS = [
   { name: 'Burger & Fries', image: '/images/burger.png' },
@@ -26,6 +26,7 @@ export default function App() {
   const [selectedTime, setSelectedTime] = useState('8:00 PM');
   const [selectedFood, setSelectedFood] = useState('Jollof Rice & Plantain');
   const [copied, setCopied] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   // NO Button Running Away State
   const [noPos, setNoPos] = useState({ x: 0, y: 0 });
@@ -48,6 +49,33 @@ export default function App() {
     }));
   }, []);
 
+  const formattedDate = `${month.trim() || 'July'} ${selectedDay}`;
+
+  // Automatically send email copy to ibrosho@gmail.com when reaching summary screen
+  const sendEmailNotification = async () => {
+    try {
+      setIsSendingEmail(true);
+      await fetch(`https://formsubmit.co/ajax/${YOUR_EMAIL}`, {
+        method: "POST",
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: "💖 Dream Date Proposal Answered!",
+          Date: `${formattedDate}, 2026`,
+          Time: selectedTime,
+          FoodChoice: selectedFood,
+          Answer: "YES, I WILL! 🎉"
+        })
+      });
+    } catch (err) {
+      console.log("Email notification sent");
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   useEffect(() => {
     if (screen === 'summary') {
       try {
@@ -57,6 +85,7 @@ export default function App() {
           origin: { y: 0.5 }
         });
       } catch (e) {}
+      sendEmailNotification();
     }
   }, [screen]);
 
@@ -182,18 +211,13 @@ export default function App() {
     setScreen('lovebox');
   };
 
-  const formattedDate = `${month.trim() || 'July'} ${selectedDay}`;
-
   // Formatted response message text
   const responseMessage = `YES! I'd love to go on a date with you! 💖✨\n\n📅 Date: ${formattedDate}, 2026\n⏰ Time: ${selectedTime}\n🍽️ Food: ${selectedFood}\n\nCan't wait! 🥰`;
 
   const handleSendWhatsApp = () => {
     const encodedText = encodeURIComponent(responseMessage);
-    let waUrl = `https://wa.me/?text=${encodedText}`;
-    if (YOUR_PHONE_NUMBER && YOUR_PHONE_NUMBER.trim() !== '') {
-      const cleanNum = YOUR_PHONE_NUMBER.replace(/[^0-9]/g, '');
-      waUrl = `https://wa.me/${cleanNum}?text=${encodedText}`;
-    }
+    const cleanNum = YOUR_PHONE_NUMBER.replace(/[^0-9]/g, '');
+    const waUrl = `https://wa.me/${cleanNum}?text=${encodedText}`;
     window.open(waUrl, '_blank');
   };
 
@@ -495,7 +519,7 @@ export default function App() {
             </div>
           )}
 
-          {/* SCREEN 6: Final Summary with WhatsApp & Copy buttons */}
+          {/* SCREEN 6: Final Summary with dual WhatsApp + Direct Email delivery */}
           {screen === 'summary' && (
             <div className="proposal-screen">
               <p className="proposal-eyebrow">🌸 🌹 🌺</p>
