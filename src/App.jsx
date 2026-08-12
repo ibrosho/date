@@ -527,7 +527,7 @@ export default function App() {
                 It's officially a <em>Date!</em>
               </h1>
               <p className="proposal-subtitle">
-                YAY!! I am already looking forward to seeing you, cuteie.
+                YAY!! I am already looking forward to seeing you, cuteieee pie. This date is going to be the best ever.
               </p>
 
               <div className="summary-box">
