@@ -274,7 +274,7 @@ export default function App() {
           {screen === 'lovebox' && (
             <div className="proposal-screen proposal-screen--lovebox">
               <p className="proposal-eyebrow">
-                {isBoxOpen ? 'a little note for you' : 'something sweet is waiting for you 💖 BabyKay 💖'}
+                {isBoxOpen ? 'a little note for you' : 'something sweet is waiting for you 💖 Morenikeji 💖'}
               </p>
 
               <div
